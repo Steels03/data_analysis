@@ -10,10 +10,16 @@ import pandas
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from os.path import exists
 
 spark = SparkSession.builder.master("local[1]").appName("SparkByExamples.com").getOrCreate()
 
-df = spark.read.text("sample_access_log")
+data_file = "sample_access_log"
+
+if (not exists(data_file)):
+    print("ERROR : " + data_file + " isn't present")
+    exit(0)
+df = spark.read.text(data_file)
 df.printSchema()
 print((df.count(), len(df.columns)))
 df.show(10, truncate=False)
