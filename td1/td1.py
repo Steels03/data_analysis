@@ -1,24 +1,19 @@
-from more_itertools import sample
 import findspark
 findspark.init()
 
 import pyspark
 from pyspark.sql import SparkSession, functions
 from pyspark.sql.functions import regexp_extract
-import re
-import pandas
 import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 from os.path import exists
 
 spark = SparkSession.builder.master("local[1]").appName("SparkByExamples.com").getOrCreate()
 
-data_file = "sample_access_log"
+data_file = "td/sample_access_log"
 
 if (not exists(data_file)):
     print("ERROR : " + data_file + " isn't present")
-    exit(0)
+    exit(1)
 df = spark.read.text(data_file)
 df.printSchema()
 print((df.count(), len(df.columns)))

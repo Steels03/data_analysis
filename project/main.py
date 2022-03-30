@@ -33,3 +33,22 @@ oldColumns = df.schema.names
 df = reduce(lambda df, idx: df.withColumnRenamed(oldColumns[idx], constants.COLUMN_NAMES[idx]), range(len(oldColumns)), df)
 df.printSchema()
 df.limit(10).show()
+
+stages = []
+# 1. clean data and tokenize sentences using RegexTokenizer
+regexTokenizer = RegexTokenizer(inputCol="sms", outputCol="tokens", pattern="\\W+")
+stages += [regexTokenizer]
+
+# 2. CountVectorize the data
+cv = CountVectorizer(inputCol="tokens", outputCol="token_features", minDF=2.0)#, vocabSize=3, minDF=2.0
+stages += [cv]
+
+# 3. Convert the labels to numerical values using binariser
+indexer = StringIndexer(inputCol="label_string", outputCol="label")
+stages += [indexer]
+
+# 4. Vectorise features using vectorassembler
+vecAssembler = VectorAssembler(inputCols=['token_features'], outputCol="features")
+stages += [vecAssembler]
+
+[print('\n', stage) for stage in stages]
